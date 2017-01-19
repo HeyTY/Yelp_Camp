@@ -1,0 +1,23 @@
+{
+  "name": "yelp_camp",
+  "version": "1.0.0",
+  "description": "YelpCamp",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/HeyTY/yelp_camp.git"
+  },
+  "author": "Ty Le",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/HeyTY/yelp_camp/issues"
+  },
+  "homepage": "https://github.com/HeyTY/yelp_camp#readme",
+  "dependencies": {
+    "ejs": "^2.5.5",
+    "express": "^4.14.0"
+  }
+}
