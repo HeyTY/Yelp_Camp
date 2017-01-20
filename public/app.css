@@ -1,0 +1,17 @@
+body {
+	text-align: center;
+}
+
+h1 {
+	color: #1D3557;
+	text-align: center;
+}
+
+p {
+
+}
+
+#newCampgroundInput {
+	width: 30%;
+	margin: 35px auto;
+}
