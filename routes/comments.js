@@ -9,7 +9,7 @@ var Comment 	= require("../models/comment");
 //		COMMENTS ROUTES
 //=====================================
 
-// COMMENT FORM - route to the form 
+// NEW -  Comment Route
 router.get("/new", isLoggedIn, function(req, res){
 	// find campground by id
 	Campground.findById(req.params.id, function(err, campground){
@@ -22,7 +22,7 @@ router.get("/new", isLoggedIn, function(req, res){
 });
 
 
-// COMMENT POST ROUTE
+// POST - Comment Route
 router.post("/", isLoggedIn, function (req, res) {
 	// lookup campground using ID
 	Campground.findById(req.params.id, function(err, campground) {
@@ -49,6 +49,20 @@ router.post("/", isLoggedIn, function (req, res) {
 		}
 	});
 })
+
+// /campgrounds/:id/comments/:comment_id/edit
+
+// EDIT - Comment Route
+router.get("/:comments_id/edit", function (req, res){
+	Comment.findById(req.params.comment_id, function(err, foundComment){
+		if (err) {
+			console.log(err);
+			res.redirect("back");
+		}else{
+			res.render("comments/edit", {campground_id: req.params.id, comment: foundComment});
+		}
+	});
+});
 
 	// Middleware
 function isLoggedIn(req, res, next){

@@ -43,7 +43,7 @@ router.post("/", isLoggedIn, function(req, res){
 	});
 }); 
 
-//NEW - show form to create new campground
+// NEW - show form to create new campground
 router.get("/new", isLoggedIn , function(req, res){
 	res.render("campgrounds/new")
 });
@@ -62,6 +62,46 @@ router.get("/:id", function(req, res){
 	});
 });
 
+
+// EDIT - Campground Route
+router.get("/:id/edit", checkCampgroundOwnership, function(req, res){
+	Campground.findById(req.params.id, function(err, foundCampground){
+		res.render("campgrounds/edit", {campground: foundCampground});	
+	});
+});
+							
+				
+
+
+// UPDATE - Campground Route
+router.put("/:id", checkCampgroundOwnership, function(req, res){
+	//find and update
+	
+	Campground.findByIdAndUpdate(req.params.id, req.body.campground, function(err, updatedcampground){
+		if(err) {
+			res.redirect("/campgrounds");
+		} else {
+			res.redirect("/campgrounds/" + req.params.id);
+		}
+	});
+});
+
+// DESTROY - Campground Route
+router.delete("/:id", checkCampgroundOwnership, function(req, res){
+
+	// find and delete
+	Campground.findByIdAndRemove(req.params.id, function(err){
+		if (err) {
+			res.redirect("/campgrounds");
+		} else {
+			res.redirect("/campgrounds");
+		}
+	})
+
+	//redirect to campground page
+});
+
+
 	// Middleware
 function isLoggedIn(req, res, next){
 		if(req.isAuthenticated()){
@@ -69,6 +109,27 @@ function isLoggedIn(req, res, next){
 		}
 		res.redirect("/login");
 }
+
+function checkCampgroundOwnership(req, res, next){
+		// is user logged in?
+		if(req.isAuthenticated()){
+		Campground.findById(req.params.id, function(err, foundCampground){
+			if (err) {
+				res.redirect("back");
+			} else {
+				// does user own the campground? Mongoose method
+				if(foundCampground.author.id.equals(req.user._id)) {
+					next();
+				} else {
+					res.redirect("back");
+				}
+			}
+		});
+		} else {
+			res.redirect("back");
+		}
+}
+
 
 
 module.exports = router;
