@@ -11,8 +11,8 @@ const 	express 		= require("express"),
 		User			= require("./models/user"),
 		seedDB      	= require("./seeds")
 
-const 	port 			= process.env.PORT || 3000;
 
+const port = process.env.DATABASEURL || "mongodb://localhost/yelp_camp";
 
 // Requiring routes
 var	commentsRoutes		= require("./routes/comments"),
@@ -22,7 +22,9 @@ var	commentsRoutes		= require("./routes/comments"),
 
 // mongoose.connect("mongodb://localhost/yelp_camp");
 
-mongoose.connect("mongodb://HeyTY:A1b2c3d4e5@dbh85.mlab.com:27857/yelp_camp");
+mongoose.connect(port);
+
+
 app.use(express.static(__dirname + "/public"));
 app.use(bodyParser.urlencoded({extended: true}));
 app.set("view engine", "ejs");
@@ -61,6 +63,9 @@ app.use("/campgrounds",campgroundRoutes);
 app.use("/campgrounds/:id/comments",commentsRoutes);
 
 
-app.listen(port, (req,res) =>{
-	console.log(`Server Deployed on port ${port}!`);
+app.listen(process.env.PORT || 3000, process.env.IP, function (req,res) {
+	console.log(`Server Deployed on ${port}`);
 });
+
+
+
