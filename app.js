@@ -1,20 +1,24 @@
-var express 		= require("express"),
-	app 			= express(),
-	bodyParser  	= require("body-parser"),
-	mongoose		= require("mongoose"),
-	flash			= require("connect-flash"),
-	passport		= require("passport"),
-	LocalStrategy 	= require("passport-local"),
-	methodOverride	= require("method-override"),
-	Campground  	= require("./models/campground"),
-	Comment     	= require("./models/comment"),
-	User			= require("./models/user"),
-	seedDB      	= require("./seeds")
-	
+const 	express 		= require("express"),
+		app 			= express(),
+		bodyParser  	= require("body-parser"),
+		mongoose		= require("mongoose"),
+		flash			= require("connect-flash"),
+		passport		= require("passport"),
+		LocalStrategy 	= require("passport-local"),
+		methodOverride	= require("method-override"),
+		Campground  	= require("./models/campground"),
+		Comment     	= require("./models/comment"),
+		User			= require("./models/user"),
+		seedDB      	= require("./seeds")
+
+const 	port 			= process.env.PORT || 3000;
+
+
 // Requiring routes
 var	commentsRoutes		= require("./routes/comments"),
 	campgroundRoutes 	= require("./routes/campgrounds"),
 	indexRoutes			= require("./routes/index")
+
 
 // mongoose.connect("mongodb://localhost/yelp_camp");
 
@@ -49,7 +53,7 @@ app.use(function(req, res, next){
 });
 
 
-
+ 
 
 
 app.use(indexRoutes);
@@ -57,6 +61,6 @@ app.use("/campgrounds",campgroundRoutes);
 app.use("/campgrounds/:id/comments",commentsRoutes);
 
 
-app.listen(3000, function(){
-	console.log("Server Deployed!");
+app.listen(port, (req,res) =>{
+	console.log(`Server Deployed on port ${port}!`);
 });
