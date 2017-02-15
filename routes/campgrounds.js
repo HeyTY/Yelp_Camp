@@ -2,6 +2,8 @@ var express 	= require("express");
 var router  	= express.Router();
 var Campground  = require("../models/campground");
 var middleware  = require("../middleware/");
+var axios		= require("axios");
+var request		= require("request");
 
 
 //=====================================
@@ -26,12 +28,13 @@ router.post("/", middleware.isLoggedIn, function(req, res){
 	var name 			= req.body.name;
 	var price			= req.body.price;
 	var image 			= req.body.image;
+	var location		= req.body.location
 	var description 	= req.body.description
 	var author 			= {
 			id: req.user._id,
 			username: req.user.username
 	};
-	var newCampground 	= {name: name, price: price, image: image, description: description, author: author};
+	var newCampground 	= {name: name, price: price, image: image, location: location, description: description, author: author};
 	// Create a new campground and save to database
 	Campground.create(newCampground, function (err, newlyCreated){
 		if (err) {
@@ -52,14 +55,50 @@ router.get("/new", middleware.isLoggedIn , function(req, res){
 
 // SHOW- shows more info about a campground
 router.get("/:id", function(req, res){
+
 	//find the campground id with provided ID
 	Campground.findById(req.params.id).populate("comments").exec(function(err, foundCampground){
 		if (err){
 			console.log(err);
 		} else {
-			console.log(foundCampground);
-			//render show template with that campground
+			// console.log(foundCampground);
+			// console.log(foundCampground.location)
+
+
+			// Geolocation Google API
+			var query 		= foundCampground.location
+			var geocodeUrl 	= `https://maps.googleapis.com/maps/api/geocode/json?address=${query}`
+
+			axios.get(geocodeUrl).then((res) => {
+			if (res.data.status === "ZERO_RESULTS") {
+				throw new Error("Unable to find that address")
+			}
+
+			var lat = res.data.results[0].geometry.location.lat;
+			var lng = res.data.results[0].geometry.location.lng;
+			var weatherUrl = `https://api.darksky.net/forecast/85113e06189b91279bda1ee10567b43e/${lat},${lng}`
+			console.log(`=====================================`)
+			console.log(res.data.results[0].formatted_address);
+			console.log(`lat: ${lat} lng:${lng}`)
+			return axios.get(weatherUrl);
+		}).then((res) => {
+			var summary  = res.data.currently.summary;
+			var current  = res.data.currently.temperature;
+			var actual   = res.data.currently.apparentTemperature;
+		
+			console.log(`Daily summary: ${summary}`);
+			console.log(`Current temp:    ${current}`);
+			console.log(`Actual temp:     ${actual}`);
+		}).catch((err) => {
+			if (err.code === "ENOTFOUND") {
+				console.log("Unable to connect to API servers");
+			} else {
+				console.log(err.message);
+			}
+		});
+
 			res.render("campgrounds/show", {campground: foundCampground});
+
 		}
 	});
 });
