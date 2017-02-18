@@ -4,6 +4,8 @@ var Campground  = require("../models/campground");
 var middleware  = require("../middleware/");
 var axios		= require("axios");
 var request		= require("request");
+const geocode	= require("../weather/geocode");
+const weather	= require("../weather/weather");
 
 
 //=====================================
@@ -64,40 +66,32 @@ router.get("/:id", function(req, res){
 			// console.log(foundCampground);
 			// console.log(foundCampground.location)
 
-
-			// Geolocation Google API
-			var query 		= foundCampground.location
-			var geocodeUrl 	= `https://maps.googleapis.com/maps/api/geocode/json?address=${query}`
-
-			axios.get(geocodeUrl).then((res) => {
-			if (res.data.status === "ZERO_RESULTS") {
-				throw new Error("Unable to find that address")
-			}
-
-			var lat = res.data.results[0].geometry.location.lat;
-			var lng = res.data.results[0].geometry.location.lng;
-			var weatherUrl = `https://api.darksky.net/forecast/85113e06189b91279bda1ee10567b43e/${lat},${lng}`
-			console.log(`=====================================`)
-			console.log(res.data.results[0].formatted_address);
-			console.log(`lat: ${lat} lng:${lng}`)
-			return axios.get(weatherUrl);
-		}).then((res) => {
-			var summary  = res.data.currently.summary;
-			var current  = res.data.currently.temperature;
-			var actual   = res.data.currently.apparentTemperature;
+	geocode.geocodeAddress(foundCampground.location, (err, results) => {
+		if (err) {
+			console.log(err);
+		} else {
+			console.log(results.address)
 		
-			console.log(`Daily summary: ${summary}`);
-			console.log(`Current temp:    ${current}`);
-			console.log(`Actual temp:     ${actual}`);
-		}).catch((err) => {
-			if (err.code === "ENOTFOUND") {
-				console.log("Unable to connect to API servers");
+		weather.getWeather(results.latitude,results.longitude, (err, weatherResults) => {
+			if (err) {
+				console.log(err);
 			} else {
-				console.log(err.message);
-			}
-		});
+				console.log(`Today summary: ${weatherResults.summary}`)
+				console.log(`It's currently: ${weatherResults.current}`)
+				console.log(`It feels like: ${weatherResults.actual}`)
 
-			res.render("campgrounds/show", {campground: foundCampground});
+			}
+			res.render("campgrounds/show", {campground: foundCampground, weatherResults: weatherResults});
+			})
+		}
+		
+	});
+
+
+
+
+
+			
 
 		}
 	});
