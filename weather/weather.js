@@ -16,7 +16,8 @@ var getWeather = (lat,lng,callback) => {
 				callback ( undefined, {
 				summary:   body.currently.summary,
 				current:   body.currently.temperature,
-				actual:    body.currently.apparentTemperature
+				actual:    body.currently.apparentTemperature,
+				icon:      body.currently.icon
 				});
 			} else {
 				callback("Unable to fetch Weather")

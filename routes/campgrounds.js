@@ -79,6 +79,8 @@ router.get("/:id", function(req, res){
 				console.log(`Today summary: ${weatherResults.summary}`)
 				console.log(`It's currently: ${weatherResults.current}`)
 				console.log(`It feels like: ${weatherResults.actual}`)
+				console.log(`Icon: ${weatherResults.icon}`)
+
 
 			}
 			res.render("campgrounds/show", {campground: foundCampground, weatherResults: weatherResults});

@@ -32,3 +32,7 @@ p {
 	display: inline;
 }
 
+#weather-temperature {
+	font-weight: 700;
+	font-size: 25px;
+}
