@@ -1,11 +1,13 @@
 var express 	= require("express");
 var router  	= express.Router();
+const moment    = require("moment");
 var Campground  = require("../models/campground");
 var middleware  = require("../middleware/");
 var axios		= require("axios");
 var request		= require("request");
 const geocode	= require("../weather/geocode");
 const weather	= require("../weather/weather");
+
 
 
 //=====================================
@@ -83,7 +85,7 @@ router.get("/:id", function(req, res){
 
 
 			}
-			res.render("campgrounds/show", {campground: foundCampground, weatherResults: weatherResults});
+			res.render("campgrounds/show", {campground: foundCampground, weatherResults: weatherResults, moment: moment});
 			})
 		}
 		
